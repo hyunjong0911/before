@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUTE Icon Generator</title>
+    <style>
+        body {
+            background-color: #f8e8f0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        button {
+            background-color: #ff66b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        button:hover {
+            background-color: #ff3399;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        .description {
+            max-width: 600px;
+            margin: 20px 0;
+            text-align: center;
+            color: #333;
+            line-height: 1.5;
+        }
+        .canvases {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+        }
+        .canvas-label {
+            margin-top: 5px;
+            font-weight: bold;
+            color: #ff66b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>CUTE Icon Generator</h1>
+    
+    <div class="description">
+        이 도구는 첨부된 이미지의 가운데 나무를 중심으로 둥근 모서리 사각형 형태의 앱 아이콘을 생성합니다.
+    </div>
+    
+    <div class="canvases">
+        <div class="canvas-container">
+            <canvas id="canvas192" width="192" height="192"></canvas>
+            <div class="canvas-label">192 x 192</div>
+        </div>
+        <div class="canvas-container">
+            <canvas id="canvas512" width="512" height="512"></canvas>
+            <div class="canvas-label">512 x 512</div>
+        </div>
+    </div>
+    
+    <div>
+        <button id="download192">Download 192x192 Icon</button>
+        <button id="download512">Download 512x512 Icon</button>
+    </div>
+
+    <script>
+        // 캔버스 요소 가져오기
+        const canvas192 = document.getElementById('canvas192');
+        const ctx192 = canvas192.getContext('2d');
+        const canvas512 = document.getElementById('canvas512');
+        const ctx512 = canvas512.getContext('2d');
+
+        // 이미지 로드
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        
+        // 이미지 URL - 사용자가 첨부한 이미지 (실제 배포 시에는 로컬 파일 경로로 변경 필요)
+        // 여기서는 임시 URL을 사용합니다. 실제 이미지 URL이나 로컬 파일로 교체해야 합니다.
+        img.src = 'tree_icon_source.jpg';
+        
+        img.onload = function() {
+            // 원본 이미지에서 중앙 부분 계산
+            const centerX = img.width / 2;
+            const centerY = img.height / 2;
+            
+            // 정사각형 크기 계산 (이미지의 짧은 쪽 기준)
+            const size = Math.min(img.width, img.height) * 0.4; // 이미지의 40% 크기로 자르기
+            
+            // 아이콘 그리기 함수
+            drawIcon(ctx192, 192, centerX, centerY, size);
+            drawIcon(ctx512, 512, centerX, centerY, size);
+        };
+        
+        // 오류 처리
+        img.onerror = function() {
+            console.error('이미지를 불러올 수 없습니다. 로컬 파일을 사용하시거나 유효한 URL을 확인하세요.');
+            // 오류 발생 시 기본 아이콘 생성
+            drawDefaultIcon(ctx192, 192);
+            drawDefaultIcon(ctx512, 512);
+        };
+
+        // 아이콘 그리기 함수
+        function drawIcon(ctx, canvasSize, sourceCenterX, sourceCenterY, sourceSize) {
+            // 캔버스 초기화
+            ctx.clearRect(0, 0, canvasSize, canvasSize);
+            
+            // 둥근 모서리 사각형 그리기 위한 반경
+            const radius = canvasSize * 0.2; // 캔버스 크기의 20%
+            
+            // 클리핑 패스 생성 (둥근 모서리 사각형)
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(canvasSize - radius, 0);
+            ctx.arcTo(canvasSize, 0, canvasSize, radius, radius);
+            ctx.lineTo(canvasSize, canvasSize - radius);
+            ctx.arcTo(canvasSize, canvasSize, canvasSize - radius, canvasSize, radius);
+            ctx.lineTo(radius, canvasSize);
+            ctx.arcTo(0, canvasSize, 0, canvasSize - radius, radius);
+            ctx.lineTo(0, radius);
+            ctx.arcTo(0, 0, radius, 0, radius);
+            ctx.closePath();
+            ctx.clip();
+            
+            // 이미지의 중앙 부분을 캔버스에 그리기
+            const sourceX = sourceCenterX - sourceSize / 2;
+            const sourceY = sourceCenterY - sourceSize / 2;
+            
+            try {
+                ctx.drawImage(
+                    img,
+                    sourceX, sourceY, sourceSize, sourceSize,  // 소스 이미지의 잘라낼 영역
+                    0, 0, canvasSize, canvasSize               // 캔버스에 그릴 영역
+                );
+                
+                // 텍스트 추가 (512 크기에만)
+                if (canvasSize >= 512) {
+                    ctx.font = `bold ${canvasSize * 0.08}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = 'white';
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                    ctx.shadowBlur = 4;
+                    ctx.fillText('CUTE', canvasSize/2, canvasSize * 0.9);
+                    ctx.shadowColor = 'transparent'; // 그림자 효과 제거
+                }
+            } catch (error) {
+                console.error('이미지 그리기 오류:', error);
+                drawDefaultIcon(ctx, canvasSize);
+            }
+        }
+        
+        // 기본 아이콘 그리기 (이미지 로드 실패 시)
+        function drawDefaultIcon(ctx, size) {
+            // 배경 그라데이션
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#00b09b');   // 청록색
+            gradient.addColorStop(1, '#ff66b3');   // 핑크
+            
+            // 둥근 모서리 사각형 그리기 위한 반경
+            const radius = size * 0.2; // 캔버스 크기의 20%
+            
+            // 배경 그리기
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.arcTo(size, 0, size, radius, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.arcTo(size, size, size - radius, size, radius);
+            ctx.lineTo(radius, size);
+            ctx.arcTo(0, size, 0, size - radius, radius);
+            ctx.lineTo(0, radius);
+            ctx.arcTo(0, 0, radius, 0, radius);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 텍스트 추가
+            ctx.font = `bold ${size * 0.15}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'white';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            ctx.shadowBlur = 3;
+            ctx.fillText('CUTE', size/2, size/2);
+        }
+
+        // 다운로드 기능
+        document.getElementById('download192').addEventListener('click', function() {
+            downloadCanvas(canvas192, 'icon-192x192.png');
+        });
+        
+        document.getElementById('download512').addEventListener('click', function() {
+            downloadCanvas(canvas512, 'icon-512x512.png');
+        });
+        
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html> 
