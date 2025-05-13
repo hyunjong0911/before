@@ -3,93 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Memory Album</title>
+    <meta name="description" content="한국어와 프랑스어를 지원하는 추억 공유 앨범 사이트입니다. 소중한 순간을 기록하고 공유하세요.">
+    <meta name="keywords" content="추억 앨범, 사진 갤러리, 다국어, 한국어, 프랑스어">
+    <meta name="author" content="Memory Album Creator">
+    <title>CUTE</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+    
+    <!-- 핵심 폰트 사전 로드 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- 핵심 CSS 인라인 (중요한 스타일만) -->
+    <style>
+        /* 핵심 스타일 인라인화 */
+        body {
+            background-color: #f8e8f0;
+            font-family: 'Noto Sans KR', 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 240, 245, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(255, 102, 179, 0.25);
+            width: 90%;
+            max-width: 400px;
+        }
+    </style>
+    
+    <!-- 나머지 CSS는 비동기 로드 -->
+    <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="style.css"></noscript>
+    
+    <!-- PWA 지원을 위한 메타 태그 -->
+    <meta name="theme-color" content="#ff66b3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CUTE">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- 매니페스트 링크 -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple 기기를 위한 아이콘 -->
+    <link rel="apple-touch-icon" href="images/icon-192x192.png">
+    
+    <!-- 스플래시 스크린 이미지 -->
+    <link rel="apple-touch-startup-image" href="images/icon-512x512.png">
 </head>
 <body>
-    <header>
-        <div class="language-selector">
-            <button id="langKo" class="lang-btn active" data-lang="ko">한국어</button>
-            <button id="langFr" class="lang-btn" data-lang="fr">Français</button>
-        </div>
-        <h1 data-i18n="title">Our Memory Album</h1>
-        <p data-i18n="subtitle">A collection of our shared moments and adventures</p>
-        <button id="addMemoryBtn" class="action-button" data-i18n="addMemory">추가하기</button>
-    </header>
-
-    <main>
-        <div class="gallery-container" id="memoryGallery">
-            <!-- Memory cards will be dynamically generated here -->
-        </div>
-    </main>
-
-    <!-- Modal for displaying memory details -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-content">
-            <span class="close-button" id="closeModal">&times;</span>
-            <div class="modal-body">
-                <img id="modalImage" src="" alt="Memory Image">
-                <h2 id="modalTitle"></h2>
-                <div class="memory-info">
-                    <p><span class="info-label" data-i18n="date">Date:</span> <span id="modalDate"></span></p>
-                    <p><span class="info-label" data-i18n="location">Location:</span> <span id="modalLocation"></span></p>
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="loginOverlay" role="dialog" aria-labelledby="loginTitle" aria-modal="true">
+        <div class="login-container">
+            <h2 id="loginTitle" data-i18n="loginTitle">로그인</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username" data-i18n="usernameLabel">아이디:</label>
+                    <input type="text" id="username" required aria-required="true">
                 </div>
-                <div class="memory-story">
-                    <p id="modalStory"></p>
+                <div class="form-group">
+                    <label for="password" data-i18n="passwordLabel">비밀번호:</label>
+                    <input type="password" id="password" required aria-required="true">
                 </div>
-                <div class="modal-actions">
-                    <button id="editMemoryBtn" class="action-button" data-i18n="edit">수정</button>
-                    <button id="deleteMemoryBtn" class="action-button delete" data-i18n="delete">삭제</button>
+                <div class="error-message" id="loginError" role="alert" aria-live="assertive"></div>
+                <div class="form-actions">
+                    <button type="submit" class="action-button" data-i18n="loginButton">로그인</button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
-    <!-- Add/Edit Memory Modal -->
-    <div class="modal-overlay" id="editModalOverlay">
-        <div class="modal-content">
-            <span class="close-button" id="closeEditModal">&times;</span>
-            <div class="modal-body">
-                <h2 id="editModalTitle" data-i18n="addMemoryTitle">추억 추가하기</h2>
-                <form id="memoryForm">
-                    <input type="hidden" id="memoryId">
-                    <div class="form-group">
-                        <label for="title" data-i18n="titleLabel">제목:</label>
-                        <input type="text" id="title" required>
+    <!-- Main Content (hidden until login) -->
+    <div class="content-container" id="contentContainer" style="display: none;">
+        <header>
+            <div class="header-top">
+                <div class="language-selector" role="group" aria-label="언어 선택">
+                    <button id="langKo" class="lang-btn active" data-lang="ko" aria-pressed="true">한국어</button>
+                    <button id="langFr" class="lang-btn" data-lang="fr" aria-pressed="false">Français</button>
+                </div>
+                <div class="user-controls">
+                    <div class="profile-area">
+                        <img id="profilePicture" class="profile-picture hidden" src="" alt="프로필 사진" loading="lazy" fetchpriority="low">
+                        <span class="username-display" id="usernameDisplay"></span>
                     </div>
-                    <div class="form-group">
-                        <label for="date" data-i18n="dateLabel">날짜:</label>
-                        <input type="date" id="date" required>
+                    <button id="logoutButton" class="logout-btn" data-i18n="logout">로그아웃</button>
+                </div>
+            </div>
+            <h1 data-i18n="title">Our Memory Album</h1>
+            <p data-i18n="subtitle">A collection of our shared moments and adventures</p>
+            <button id="addMemoryBtn" class="action-button" data-i18n="addMemory" aria-label="추억 추가하기">추가하기</button>
+        </header>
+
+        <main>
+            <div class="gallery-container" id="memoryGallery" role="region" aria-label="추억 갤러리">
+                <!-- Memory cards will be dynamically generated here -->
+            </div>
+        </main>
+
+        <!-- Modal for displaying memory details -->
+        <div class="modal-overlay" id="modalOverlay" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+            <div class="modal-content">
+                <span class="close-button" id="closeModal" aria-label="닫기">&times;</span>
+                <div class="modal-body">
+                    <img id="modalImage" src="" alt="Memory Image" loading="lazy">
+                    <h2 id="modalTitle"></h2>
+                    <div class="memory-info">
+                        <p><span class="info-label" data-i18n="date">Date:</span> <span id="modalDate"></span></p>
+                        <p><span class="info-label" data-i18n="location">Location:</span> <span id="modalLocation"></span></p>
                     </div>
-                    <div class="form-group">
-                        <label for="location" data-i18n="locationLabel">장소:</label>
-                        <input type="text" id="location" required>
+                    <div class="memory-story">
+                        <p id="modalStory"></p>
                     </div>
-                    <div class="form-group">
-                        <label for="imageUrl" data-i18n="imageUrlLabel">이미지 URL:</label>
-                        <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" required>
-                        <p class="help-text" data-i18n="imageUrlHelp">* Imgur, Google Photos 등에서 이미지 URL을 복사해서 붙여넣으세요</p>
+                    <div id="modalComments" class="memory-comments"></div>
+                    <div class="modal-actions">
+                        <button id="editMemoryBtn" class="action-button" data-i18n="edit">수정</button>
+                        <button id="deleteMemoryBtn" class="action-button delete" data-i18n="delete">삭제</button>
                     </div>
-                    <div class="form-group">
-                        <label for="story" data-i18n="storyLabel">이야기:</label>
-                        <textarea id="story" rows="4" required></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="action-button" data-i18n="save">저장하기</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
+
+        <!-- Add/Edit Memory Modal -->
+        <div class="modal-overlay" id="editModalOverlay" role="dialog" aria-labelledby="editModalTitle" aria-hidden="true">
+            <div class="modal-content">
+                <span class="close-button" id="closeEditModal" aria-label="닫기">&times;</span>
+                <div class="modal-body">
+                    <h2 id="editModalTitle" data-i18n="addMemoryTitle">추억 추가하기</h2>
+                    <form id="memoryForm">
+                        <input type="hidden" id="memoryId">
+                        <div class="form-group">
+                            <label for="title" data-i18n="titleLabel">제목:</label>
+                            <input type="text" id="title" required aria-required="true">
+                        </div>
+                        <div class="form-group">
+                            <label for="date" data-i18n="dateLabel">날짜:</label>
+                            <input type="date" id="date" required aria-required="true">
+                        </div>
+                        <div class="form-group">
+                            <label for="location" data-i18n="locationLabel">장소:</label>
+                            <input type="text" id="location" required aria-required="true">
+                        </div>
+                        <div class="form-group">
+                            <label for="imageUrl" data-i18n="imageUrlLabel">이미지 URL:</label>
+                            <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" required aria-required="true">
+                            <p class="help-text" data-i18n="imageUrlHelp">* Imgur, Google Photos 등에서 이미지 URL을 복사해서 붙여넣으세요</p>
+                            <div class="image-preview-container">
+                                <img id="imagePreview" class="image-preview hidden" alt="이미지 미리보기" loading="lazy">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="story" data-i18n="storyLabel">이야기:</label>
+                            <textarea id="story" rows="4" required aria-required="true"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="action-button" data-i18n="save">저장하기</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>✨ 소중한 추억들을 함께 간직해요 ✨</p>
+            <p>© 2023 Our Memory Album | Created with ❤️</p>
+        </footer>
     </div>
 
-    <footer>
-        <p>✨ OUR MEMORIES ✨</p>
-        <p>© 2025 Our Memory Album | Created with CUTE</p>
-    </footer>
-
-    <script src="script.js"></script>
+    <!-- 핵심 스크립트 모듈화 및 최적화 -->
+    <script src="script.js" defer></script>
+    
+    <!-- PWA 지원을 위한 서비스 워커 등록 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('서비스 워커 등록 성공'))
+                    .catch(err => console.error('서비스 워커 등록 실패:', err));
+            });
+        }
+    </script>
 </body>
 </html> 
