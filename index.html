@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Memory Album</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="language-selector">
+            <button id="langKo" class="lang-btn active" data-lang="ko">한국어</button>
+            <button id="langFr" class="lang-btn" data-lang="fr">Français</button>
+        </div>
+        <h1 data-i18n="title">Our Memory Album</h1>
+        <p data-i18n="subtitle">A collection of our shared moments and adventures</p>
+        <button id="addMemoryBtn" class="action-button" data-i18n="addMemory">추가하기</button>
+    </header>
+
+    <main>
+        <div class="gallery-container" id="memoryGallery">
+            <!-- Memory cards will be dynamically generated here -->
+        </div>
+    </main>
+
+    <!-- Modal for displaying memory details -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">&times;</span>
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="Memory Image">
+                <h2 id="modalTitle"></h2>
+                <div class="memory-info">
+                    <p><span class="info-label" data-i18n="date">Date:</span> <span id="modalDate"></span></p>
+                    <p><span class="info-label" data-i18n="location">Location:</span> <span id="modalLocation"></span></p>
+                </div>
+                <div class="memory-story">
+                    <p id="modalStory"></p>
+                </div>
+                <div class="modal-actions">
+                    <button id="editMemoryBtn" class="action-button" data-i18n="edit">수정</button>
+                    <button id="deleteMemoryBtn" class="action-button delete" data-i18n="delete">삭제</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Memory Modal -->
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal-content">
+            <span class="close-button" id="closeEditModal">&times;</span>
+            <div class="modal-body">
+                <h2 id="editModalTitle" data-i18n="addMemoryTitle">추억 추가하기</h2>
+                <form id="memoryForm">
+                    <input type="hidden" id="memoryId">
+                    <div class="form-group">
+                        <label for="title" data-i18n="titleLabel">제목:</label>
+                        <input type="text" id="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date" data-i18n="dateLabel">날짜:</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location" data-i18n="locationLabel">장소:</label>
+                        <input type="text" id="location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="imageUrl" data-i18n="imageUrlLabel">이미지 URL:</label>
+                        <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" required>
+                        <p class="help-text" data-i18n="imageUrlHelp">* Imgur, Google Photos 등에서 이미지 URL을 복사해서 붙여넣으세요</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="story" data-i18n="storyLabel">이야기:</label>
+                        <textarea id="story" rows="4" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="action-button" data-i18n="save">저장하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>✨ 소중한 추억들을 함께 간직해요 ✨</p>
+        <p>© 2023 Our Memory Album | Created with ❤️</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 
